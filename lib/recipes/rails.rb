@@ -40,7 +40,7 @@ Capistrano::Configuration.instance.load do
     task :deploy_config, :roles => :app do
       source = "#{shared_path}/config/database.yml"
       dest = "#{release_path}/config/database.yml"
-      run "if [ -e \"#{source}\" ]; cp #{source} #{dest}; fi"
+      run "if [ -e \"#{source}\" ]; then cp #{source} #{dest}; fi"
     end
   end
 end
