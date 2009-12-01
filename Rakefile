@@ -6,7 +6,7 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "capistrano-boss"
     gem.summary = %Q{Capistrano extensions for configuring, provisioning, and management}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.description = %Q{Collection of capistrano extensions focused on configuration, provisioning, and management.}
     gem.email = "ascarter@gmail.com"
     gem.homepage = "http://github.com/ascarter/capistrano-boss"
     gem.authors = ["Andrew Carter"]
