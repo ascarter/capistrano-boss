@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "capistrano-boss.gemspec",
      "lib/capistrano-boss.rb",
      "lib/capistrano/recipes/deploy/scm/subversion.rb",
      "recipes/passenger.rb",

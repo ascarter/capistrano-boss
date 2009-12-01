@@ -1,4 +1,5 @@
 require File.join(File.dirname(__FILE__), 'capistrano/recipes/deploy/scm/subversion')
+Dir['../recipes/*.rb'].each { |plugin| load(plugin) }
 
 def symlink_path(source, dest)
   run "if [ -e \"#{source}\" ]; then ln -nsf #{source} #{dest}; fi"
