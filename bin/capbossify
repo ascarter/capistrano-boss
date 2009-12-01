@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'fileutils'
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename($0)} [path]"
+
+  opts.on("-h", "--help", "Displays this help info") do
+    puts opts
+    exit 0
+  end
+
+  begin
+    opts.parse!(ARGV)
+  rescue OptionParser::ParseError => e
+    warn e.message
+    puts opts
+    exit 1
+  end
+end
+
+if ARGV.empty?
+  abort "Please specify the directory to capbossify, e.g. `#{File.basename($0)} .'"
+elsif !File.exists?(ARGV.first)
+  abort "`#{ARGV.first}' does not exist."
+elsif !File.directory?(ARGV.first)
+  abort "`#{ARGV.first}' is not a directory."
+elsif ARGV.length > 1
+  abort "Too many arguments; please specify only the directory to capbossify."
+end
+
+base = ARGV.shift
+capfile = File.join(base, "Capfile")
+if !File.exists?(capfile)
+  abort "Please run capify on directory before using capbossify"
+end
+
+contents = File.readlines(capfile)
+begin
+  capboss_require = "require 'capistrano-boss'\n"
+  contents.each { |line| raise Exception.exception("'#{capfile}' already capbossified") if line == capboss_require }
+  out = File.open(capfile, "w")
+  contents.each do |line|
+    out << line
+    if line =~ /^load \'deploy\' if respond_to\?\(\:namespace\)/
+      puts "[add] adding capistrano-boss require"
+      out << capboss_require
+    end
+  end
+  out.close
+rescue Exception => ex
+  warn "[skip] #{ex.message}"
+end
+
+puts "[done] capbossified!"
