@@ -1,22 +1,4 @@
 Capistrano::Configuration.instance.load do
-  # database.yml configuration params
-  set :rails_db_adapter, "mysql"
-  set :rails_db_database, user
-  set :rails_db_username, user
-  
-  # Optional supported parameters
-  # Initially not set
-  # :rails_db_password
-  # :rails_db_host
-  # :rails_db_port
-  # :rails_db_socket
-  # :rails_db_encoding
-  # :rails_db_sslkey
-  # :rails_db_sslcert
-  # :rails_db_sslcapath
-  # :rails_db_sslcipher
-  # :rails_db_pool
-
   namespace :rails do
     after "deploy:update_code", "rails:deploy_config"
     
@@ -24,13 +6,13 @@ Capistrano::Configuration.instance.load do
     task :config_database, :roles => :app do
       require 'yaml'
       
+      # Set required fields
+      set(:rails_db_adapter, "mysql") unless exists?(:rails_db_adapter)
+      set(:rails_db_username, user) unless exists?(:rails_db_username)
+      set(:rails_db_database, "#{user}_#{rails_env}") unless exists?(:rails_db_database)
       unless exists?(:rails_db_password)
         set(:rails_db_password) { Capistrano::CLI.password_prompt("#{rails_env} #{rails_db_adapter} password: ") }
       end
-
-      # Required fields
-      set(:rails_db_username, user) unless exists?(:rails_db_username)
-      set(:rails_db_database, "#{user}_#{rails_env}") unless exists?(:rails_db_database)
 
       # Create database config
       db_config = {
@@ -42,7 +24,7 @@ Capistrano::Configuration.instance.load do
         }
       }
 
-      # Supported optional overrides
+      # Add any optional overrides
       %w[host port socket encoding sslkey sslcert sslcapath sslcipher pool].each do |attribute|
         varname = "rails_db_#{attribute}".to_sym
         if exists?(varname)
