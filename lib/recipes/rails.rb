@@ -3,6 +3,8 @@ Capistrano::Configuration.instance.load do
     after "deploy:setup", "rails:config"
     after "deploy:update_code", "rails:deploy_config"
 
+    task :about do
+      run "RAILS_ENV=#{rails_env} #{current_path}/script/about "
     task :config, :roles => :app do
       rails::config_database
     end
