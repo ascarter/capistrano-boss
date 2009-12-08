@@ -5,6 +5,8 @@ Capistrano::Configuration.instance.load do
 
     task :about do
       run "RAILS_ENV=#{rails_env} #{current_path}/script/about "
+    end
+    
     task :config, :roles => :app do
       rails::config_database
     end
