@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrew Carter"]
-  s.date = %q{2009-12-08}
+  s.date = %q{2009-12-09}
   s.default_executable = %q{capbossify}
   s.description = %q{Collection of capistrano extensions focused on configuration, provisioning, and management.}
   s.email = %q{ascarter@gmail.com}
