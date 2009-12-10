@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
      "capistrano-boss.gemspec",
      "lib/capistrano-boss.rb",
      "lib/capistrano/recipes/deploy/scm/subversion.rb",
+     "lib/recipes/apache.rb",
      "lib/recipes/passenger.rb",
      "lib/recipes/rails.rb",
      "spec/capistrano-boss_spec.rb",
