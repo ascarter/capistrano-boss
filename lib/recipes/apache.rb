@@ -25,11 +25,11 @@ Capistrano::Configuration.instance.load do
     desc "Graceful-stop Apache web service"
     task :graceful-stop, :roles => :app do
       apachectl_cmd("graceful-stop")
-    end    
-
-    # Helpers
-    def apachectl_cmd(action)
-      sudo "#{apachectl} #{action}", :pty => true
     end
   end  
+end
+
+# Helpers
+def apachectl_cmd(action)
+  sudo "#{apachectl} #{action}", :pty => true
 end
