@@ -7,7 +7,8 @@ namespace :rails do
   end
 
   task :config, :roles => :app do
-    rails::config_database
+    run "mkdir -p #{shared_path}/config"
+    rails::config_database unless disabled?(:database)
   end
 
   desc "Create a database.yml file in shared configuration"
@@ -41,7 +42,6 @@ namespace :rails do
     end
 
     # Write config file to shared/config/database.yml
-    run "mkdir -p #{shared_path}/config"
     put(db_config.to_yaml, "#{shared_path}/config/database.yml")
   end
   
@@ -49,5 +49,13 @@ namespace :rails do
     source = "#{shared_path}/config/database.yml"
     dest = "#{release_path}/config/database.yml"
     run "if [ -e \"#{source}\" ]; then cp #{source} #{dest}; fi"
+  end
+  
+  #
+  # Helper methods
+  #
+  
+  def disabled?(key)
+    exists?(:rails_disable) ? rails_disable.include?(key.to_sym) : false
   end
 end
