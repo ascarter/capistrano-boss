@@ -1,13 +1,16 @@
 module CapistranoBoss
   module Log
+    def self.timestamp
+      Time.now.strftime("%Y%m%d%H%M")
+    end
+
     def source_logs(input)
       input.is_a?(Array) ? input : [ input ]
     end
 
     # Download log to destination/<timestamp>
     def fetch_log(input, destination = ".")
-      timestamp = "#{Time.now.strftime("%Y%m%d%H%M")}"
-      target_dir = File.join(destination, rails_env, timestamp)
+      target_dir = File.join(destination, rails_env, Log.timestamp)
       FileUtils.mkdir_p(target_dir)
       source_logs(input).each do |s|
         download s, "#{target_dir}/$CAPISTRANO:HOST$-#{File.basename(s)}"
@@ -40,3 +43,4 @@ module CapistranoBoss
     end    
   end
 end
+
