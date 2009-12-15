@@ -1,4 +1,5 @@
-require 'capistrano/recipes/deploy/scm/subversion'
+#require 'capistrano/recipes/deploy/scm/subversion'
+require 'capistrano_boss/extensions/subversion'
 require 'capistrano_boss/channel'
 require 'capistrano_boss/log'
 
