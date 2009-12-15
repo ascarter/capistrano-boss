@@ -1,38 +1,36 @@
 module CapistranoBoss
   module Log
-    # Download log from shared/logs to destination/<timestamp>
-    def self.fetch(destination = ".")
-      target = File.join(destination, "#{Time.now.strftime("%Y%m%d%H%M")}")
-      FileUtils.mkdir_p(target)
-      download "#{shared_path}/log", "#{target}/{$CAPISTRANO:HOST$}", :recursive => true
+    def source_logs(input)
+      input.is_a?(Array) ? input : [ input ]
+    end
+
+    # Download log to destination/<timestamp>
+    def fetch_log(input, destination = ".")
+      timestamp = "#{Time.now.strftime("%Y%m%d%H%M")}"
+      target_dir = File.join(destination, rails_env, timestamp)
+      FileUtils.mkdir_p(target_dir)
+      source_logs(input).each do |s|
+        download s, "#{target_dir}/$CAPISTRANO:HOST$-#{File.basename(s)}"
+      end
     end
     
     # Tail log and output by channel
-    def self.tail(path, options = nil)
-      nlines = ENV['lines'].nil? ? "" : "-n #{ENV['lines']}"
-      puts nlines
-      run "tail #{nlines} #{path} #{options unless options.nil?}" do |channel, stream, data|
-        puts  
-        puts "--- #{channel[:host]} ---"
-        puts " #{data}"
-        break if stream == :err
-      end
+    def tail_log(input, context = :run)
+      nlines = ENV['lines'].nil? ? "10" : ENV['lines']
+      cmd = "tail -n #{nlines} #{source_logs(input).join(' ')}"
+      exec_by_channel(cmd, context)
     end
 
     # Watch log and stream by channel
-    def def.watch(path, options = nil)
-      run "tail -f #{path} #{options unless options.nil?}" do |channel, stream, data|
-        puts  
-        puts "--- #{channel[:host]} ---"
-        puts " #{data}"
-        break if stream == :err    
-      end
+    def watch_log(input, context = :run)
+      cmd =  "tail -f #{source_logs(input).join(' ')}"
+      exec_by_channel(cmd, context, true)
     end
 
     # Pretty print a stats hash.
     # Expects::
     #  { "host" => { "key1" => value, "key2" => value } }
-    def self.dump_stats(stats)
+    def dump_stats(stats)
       stats.each do |host, values|
         puts "-" * 40
         puts "#{host}"
