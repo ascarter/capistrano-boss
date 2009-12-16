@@ -1,6 +1,4 @@
 namespace :rails do
-  require 'yaml'
-  
   after "deploy:setup", "rails:config"
   after "deploy:update_code", "rails:deploy:config"
 
