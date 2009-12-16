@@ -1,4 +1,6 @@
 namespace :rails do
+  require 'yaml'
+  
   after "deploy:setup", "rails:config"
   after "deploy:update_code", "rails:deploy:config"
 
@@ -15,8 +17,7 @@ namespace :rails do
 
     desc "Create a database.yml file in shared configuration"
     task :database, :roles => :app do
-      require 'yaml'
-  
+
       # Set required fields
       set(:db_adapter, "mysql") unless exists?(:db_adapter)
       set(:db_username, user) unless exists?(:db_username)
@@ -49,10 +50,17 @@ namespace :rails do
   end
 
   namespace :deploy do
+    desc "Deploy Rails configuration files"
     task :config, :roles => :app do
       source = "#{shared_path}/config/database.yml"
       dest = "#{release_path}/config/database.yml"
       run "if [ -e \"#{source}\" ]; then cp #{source} #{dest}; fi"
+    end
+
+    desc "Snapshot database. Snapshot location specified by dbpath=<path>"
+    task :snapshot_database, :roles => :db do
+      db_path = ENV['dbpath'] || "#{shared_path}/backup/db" 
+      dump(db_path)
     end
   end
 
@@ -82,4 +90,5 @@ namespace :rails do
   def disabled?(key)
     exists?(:rails_disable) ? rails_disable.include?(key.to_sym) : false
   end
+
 end
