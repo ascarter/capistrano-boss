@@ -9,7 +9,7 @@ module Capistrano
         # If variable :tag or :branch are set, path is adjusted
         # Repository path should refer to root of standard svn layout
         def repository
-          if exists?(:svn_explicit_path)
+          if variable?(:svn_explicit_path)
             variable(:repository)
           elsif variable(:tag)
             "#{variable(:repository)}/tags/#{variable(:tag)}"
