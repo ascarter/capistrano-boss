@@ -1,5 +1,6 @@
 namespace :apache do
-  set(:apachectl, 'apachectl')
+  set :apachectl, 'apachectl'
+  set :apachectl_options, '-k'
 
   desc "Start Apache web service"
   task :start, :roles => :app do
@@ -47,7 +48,7 @@ namespace :apache do
   # Helpers
 
   def apachectl_cmd(action)
-    sudo "#{apachectl} -k #{action}", :pty => true
+    sudo "#{apachectl} #{apachectl_options} #{action}", :pty => true
   end
 
   def apache_log_files
