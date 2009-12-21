@@ -1,6 +1,7 @@
 namespace :apache do
   set :apachectl, 'apachectl'
   set :apachectl_options, '-k'
+  set :apache_logs, ['/var/log/httpd/error_log', '/var/log/httpd/access_log']
 
   desc "Start Apache web service"
   task :start, :roles => :app do
@@ -36,12 +37,12 @@ namespace :apache do
 
     desc "Tail Apache httpd logs"
     task :tail, :roles => :app do
-      tail_log apache_log_files, :sudo
+      tail_log(apache_logs, :sudo)
     end
 
     desc "Watch Apache httpd logs"
     task :watch, :roles => :app do
-      watch_log apache_log_files, :sudo
+      watch_log(apache_logs, :sudo)
     end
   end
 
@@ -50,14 +51,5 @@ namespace :apache do
   def apachectl_cmd(action)
     sudo "#{apachectl} #{apachectl_options} #{action}", :pty => true
   end
-
-  def apache_log_files
-    if exists?(:apache_logs)
-      apache_logs
-    else
-      [ "/var/log/httpd/access_log", "/var/log/httpd/error_log" ]
-    end
-  end
-
 end
 
