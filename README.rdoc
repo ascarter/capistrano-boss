@@ -1,17 +1,164 @@
 = capistrano-boss
 
-Description goes here.
+Collection of extensions for managing Rails projects via Capistrano in production environments.
 
-== Note on Patches/Pull Requests
- 
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
+These recipes are extracted from two years of running Ruby on Rails projects in production environments.
+
+---
+
+== Installation
+
+Install the gem:
+
+  sudo gem install capistrano-boss
+
+
+Capify a project:
+
+  rails test
+  cd test
+  capify .
+
+Capbossify to add the extensions:
+
+  capbossify .
+
+The Capfile will be extended to include the capistrano-boss recipes.
+
+---
+
+== Usage
+
+Once _capbossify_ has been used on a project, the recipes will be added to the list of available recipes.
+
+---
+
+== Recipes
+
+The capistrano-boss recipes are split into several namespaces.
+
+=== Deploy
+
+One extra recipe is added for SSH key management:
+
+  cap deploy:authorized_keys         # Upload authorized_keys file.
+
+This task uploads an *authorized_keys* file to the cap user +.ssh/authorized_keys+ location. Keyfile is expected to be +authorized_keys+ or set the environment variable +keys+:
+
+  cap deploy:authorized_keys keys=my_auth_keys
+
+=== Apache
+
+The set of apache recipes are for using the standard apachectl options as well as some convenience recipes for handling logs.
+
+  cap apache:graceful                # Graceful Apache web service
+  cap apache:graceful_stop           # Graceful-stop Apache web service
+  cap apache:log:fetch               # Download Apache httpd logs
+  cap apache:log:tail                # Tail Apache httpd logs
+  cap apache:log:watch               # Watch Apache httpd logs
+  cap apache:restart                 # Restart Apache web service
+  cap apache:start                   # Start Apache web service
+  cap apache:stop                    # Stop Apache web service
+
+By default, the variable +apache_logs+ is set to an array that includes the error and access log from the default location for Red Hat. Override with the location of the logs or to add custom logs.
+
+The control tasks use +apachectl+ variable to determine the select the HTTP server control interface.
+
+===== apache:log:fetch
+
+Copies log files to +./log/deploy/RAILS_ENV/TIMESTAMP/HOST-LOGFILENAME.log+.
+
+===== apache:log:tail
+
+Tail last n lines of the log files by host. Set environment variable +lines+ to set number of lines.
+
+  cap apache:log:tail lines=50
+
+===== apache:log:watch
+
+Running tail of all the log files with a host and timestamp for each line. Useful to watch all the logs in real-time.
+
+=== Passenger
+
+Simple task to restart a Passenger managed application. This recipe is an alias for the +touch+ +tmp/restart.txt+ method. It makes other tasks that want to restart the app more readable.
+
+  cap passenger:restart              # Restart Rails application
+
+=== Rails
+
+The Rails set of recipes help with configuration and monitoring.
+
+  cap rails:about                    # About Rails environment
+  cap rails:config                   # Generate Rails configuration
+  cap rails:config:database          # Create a database.yml file in shared con...
+  cap rails:deploy:config            # Deploy Rails configuration files
+  cap rails:deploy:snapshot_database # Snapshot database.
+  cap rails:log:fetch                # Download Rails application log
+  cap rails:log:tail                 # Tail Rails application log
+  cap rails:log:watch                # Watch Rails application log
+
+If the application is not rails, set the variable +rails_disable+ to true in the +./config/deploy.rb+ file to disable all the Rails recipes:
+
+  set :rails_disable, false
+
+===== rails:config
+
+Meta recipe that runs all the config tasks. Useful when initializing a new environment (when using the capistrano-ext multistage extension for example). Creates a +SHARED_PATH/config+ directory for config files that don't change for each deploy.
+
+===== rails:config:database
+
+Generate +SHARED_PATH/config/database.yml+ file. It will prompt for the database password if not provided. This method allows for writing the config file into a production environment without checking in the database password. Set +db_*+ variables to write the environment section in the database.yml file. Defaults are valid for MySQL with database default of +USER_RAILS_ENV+.
+
+===== rails:deploy:config
+
+Symlink +SHARED_PATH/config/database.yml+ to +CURRENT_PATH/config/database.yml+. Used for deploys to utilize the shared database config.
+
+===== rails:deploy:snapshot_database
+
+Run a MySQL dump to the location specified by environment variable +dbpath+. Default location is +SHARED_PATH/backup/db/DATABASE_TIMESTAMP.sql.gz+.
+
+  cap rails:deploy:snapshot_database dbpath=/var/backup/db
+
+===== rails:log:fetch
+
+Copies RAILS_ENV.log file to +./log/deploy/RAILS_ENV/TIMESTAMP/HOST-RAILS_ENV.log+
+
+===== rails:log:tail
+
+Tail last n lines of the log files by host. Set environment variable +lines+ to set number of lines.
+
+  cap rails:log:tail lines=50
+
+===== rails:log:watch
+
+Running tail of all the log files with a host and timestamp for each line. Useful to watch all the logs in real-time.
+
+=== Subversion
+
+Support for the subversion scm has been extended to include +branch+ and +tag+ variables. If either variable is set, the repository path is adjusted to take the tag or branch into account. The default is to use +trunk+. The repository should be the base URL without trunk/branches/tags. Also, it assumes a standard subversion layout:
+
+  project/
+    branches/
+    tags/
+    trunk/
+
+Examples:
+
+==== trunk
+  set :repository, '/path/to/svn/root/project'
+  => Repository is /path/to/svn/root/project/trunk at runtime
+
+==== branch
+  set :repository, '/path/to/svn/root/project'
+  set :branch, 'mybranch'
+  => Repository is /path/to/svn/root/project/branches/mybranch
+
+==== tag
+  set :repository, '/path/to/svn/root/project'
+  set :tag, 'mytag'
+  => Repository is /path/to/svn/root/project/tags/mytag
 
 == Copyright
 
-Copyright (c) 2009 Andrew Carter. See LICENSE for details.
+Copyright (c) 2009-2010 Andrew Carter. See LICENSE for details.
+

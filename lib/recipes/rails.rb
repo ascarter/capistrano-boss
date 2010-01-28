@@ -2,6 +2,7 @@ namespace :rails do
   after "deploy:setup", "rails:config"
   after "deploy:update_code", "rails:deploy:config"
 
+  desc "About Rails environment"
   task :about do
     run "RAILS_ENV=#{rails_env} #{current_path}/script/about "
   end
