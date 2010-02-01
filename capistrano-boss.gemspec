@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrew Carter"]
-  s.date = %q{2010-01-27}
+  s.date = %q{2010-02-01}
   s.default_executable = %q{capbossify}
   s.description = %q{Collection of capistrano extensions focused on configuration, provisioning, and management.}
   s.email = %q{ascarter@gmail.com}
@@ -35,6 +35,7 @@ Gem::Specification.new do |s|
      "lib/capistrano_boss/extensions/subversion.rb",
      "lib/capistrano_boss/log.rb",
      "lib/recipes/apache.rb",
+     "lib/recipes/delayed_job.rb",
      "lib/recipes/deploy.rb",
      "lib/recipes/passenger.rb",
      "lib/recipes/rails.rb",
