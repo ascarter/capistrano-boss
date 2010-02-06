@@ -16,9 +16,6 @@
 #
 namespace :delayed_job do
   set :delayed_job_script, "script/delayed_job"
-  set :delayed_job_workers, nil
-  set :delayed_job_min_priority, nil
-  set :delayed_job_max_priority, nil
 
   desc "Stop the delayed job daemon"
   task :stop, :roles => :worker do
