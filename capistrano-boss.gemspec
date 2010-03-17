@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrew Carter"]
-  s.date = %q{2010-02-05}
+  s.date = %q{2010-03-17}
   s.default_executable = %q{capbossify}
   s.description = %q{Collection of capistrano extensions focused on configuration, provisioning, and management.}
   s.email = %q{ascarter@gmail.com}
@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/ascarter/capistrano-boss}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{Capistrano extensions for configuring, provisioning, and management}
   s.test_files = [
     "spec/capistrano-boss_spec.rb",

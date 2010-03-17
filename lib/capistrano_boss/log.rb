@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module CapistranoBoss
   module Log
     def source_logs(input)
