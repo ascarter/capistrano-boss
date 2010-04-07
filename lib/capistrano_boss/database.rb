@@ -19,7 +19,8 @@ module CapistranoBoss
     end
 
     # Load database.yml and return configuration for current Rails environment
-    def read_database_yml
+    # Optional overrides hash to modify any options at run time
+    def read_database_yml(overrides = {})
       database_yml = {}
       run "cat #{current_path}/config/database.yml" do |channel, stream, data|
         database_yml = YAML.load(data)
@@ -28,6 +29,9 @@ module CapistranoBoss
       unless database_yml.has_key?(rails_env)
         abort "Missing configuration for #{rails_env}"
       end
+      
+      # Override options
+      overrides.each { |k,v| database_yml[rails_env][k] = v }
 
       # Return config for current environment
       database_yml[rails_env]
@@ -42,7 +46,10 @@ module CapistranoBoss
 
     # Create a snapshot of database to remote path
     def dump(db_path)
-      config = read_database_yml
+      overrides = {}
+      puts "#{db_host_dump}"
+      overrides['host'] = db_host_dump if exists?(:db_host_dump)
+      config = read_database_yml(overrides)
       adapter = CapistranoBoss::Database.load_adapter(config)
       snapshot_file = "#{adapter.option(:database)}_#{CapistranoBoss.timestamp}.sql.gz"
       run "mkdir -p #{db_path}; #{adapter.dump} | gzip > #{db_path}/#{snapshot_file}"

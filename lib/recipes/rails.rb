@@ -36,7 +36,7 @@ namespace :rails do
       }
 
       # Add any optional overrides
-      %w[host port socket encoding sslkey sslcert sslcapath sslcipher pool].each do |attribute|
+      %w[host port socket encoding sslkey sslcert sslcapath sslcipher pool reconnect].each do |attribute|
         varname = "db_#{attribute}".to_sym
         if exists?(varname)
           db_config["#{rails_env}"][attribute] = fetch(varname)
@@ -52,7 +52,7 @@ namespace :rails do
     desc "Deploy Rails configuration files"
     task :config, :roles => :app do
       source = "#{shared_path}/config/database.yml"
-      dest = "#{release_path}/config/database.yml"
+      dest = "#{latest_release}/config/database.yml"
       run "if [ -e \"#{source}\" ]; then cp #{source} #{dest}; fi"
     end
 
