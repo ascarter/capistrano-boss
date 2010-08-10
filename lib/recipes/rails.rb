@@ -51,14 +51,12 @@ namespace :rails do
   namespace :deploy do
     desc "Deploy Rails configuration files"
     task :config, :roles => :app do
-      source = "#{shared_path}/config/database.yml"
-      dest = "#{latest_release}/config/database.yml"
-      run "if [ -e \"#{source}\" ]; then cp #{source} #{dest}; fi"
+      run "for file in #{shared_path}/config/*.yml; do cp ${file} #{latest_release}/config/; done"
     end
 
     desc "Snapshot database. Snapshot location specified by dbpath=<path>"
     task :snapshot_database, :roles => :db do
-      db_path = ENV['dbpath'] || "#{shared_path}/backup/db" 
+      db_path = ENV['dbpath'] || "#{shared_path}/backup/db"
       dump(db_path)
     end
   end
